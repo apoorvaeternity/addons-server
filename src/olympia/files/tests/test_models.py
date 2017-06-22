@@ -28,7 +28,6 @@ from olympia.files.helpers import copyfileobj
 from olympia.files.utils import check_xpi_info, parse_addon, parse_xpi
 from olympia.versions.models import Version
 
-
 pytestmark = pytest.mark.django_db
 
 
@@ -68,7 +67,7 @@ class TestFile(TestCase, amo.tests.AMOPaths):
     def test_get_url_path(self):
         file_ = File.objects.get(id=67442)
         assert file_.get_url_path('src') == \
-            file_.get_absolute_url(src='src')
+               file_.get_absolute_url(src='src')
 
     def test_get_signed_url(self):
         file_ = File.objects.get(id=67442)
@@ -324,9 +323,26 @@ class TestFile(TestCase, amo.tests.AMOPaths):
         assert file_.webext_permissions_list == [
             u'iamstring', u'iamnutherstring', u'laststring!']
 
+    def test_webext_permissions_list_no_duplicates(self):
+        file_ = File.objects.get(pk=67442)
+        file_.update(is_webextension=True)
+        permissions = [u'iamstring',
+                       u'iamnutherstring',
+                       {u'iamadict': u'hmm'},
+                       [u'iamalistinalist', u'indeedy'],
+                       13,
+                       u'laststring!',
+                       u'iamstring',
+                       u'iamnutherstring',
+                       u'laststring!']
+        WebextPermission.objects.create(permissions=permissions, file=file_)
+
+        # No duplicates.
+        assert file_.webext_permissions_list == [
+            u'iamstring', u'iamnutherstring', u'laststring!']
+
 
 class TestTrackFileStatusChange(TestCase):
-
     def create_file(self, **kwargs):
         addon = Addon()
         addon.save()
@@ -380,12 +396,11 @@ class TestTrackFileStatusChange(TestCase):
             track_file_status_change(f)
         mock_incr.assert_any_call(
             'file_status_change.jetpack_sdk_only.status_{}'
-            .format(amo.STATUS_PUBLIC)
+                .format(amo.STATUS_PUBLIC)
         )
 
 
 class TestParseXpi(TestCase):
-
     def setUp(self):
         super(TestParseXpi, self).setUp()
         for version in ('3.0', '3.6.*'):
@@ -809,35 +824,35 @@ class TestFileUpload(UploadTest):
                                       "warnings": 0,
                                       "notices": 0},
             "messages": [
-                {
-                    "context": ["<code>", None],
-                    "description": ["Something something, see "
-                                    "https://bugzilla.mozilla.org/"],
-                    "column": 0,
-                    "line": 1,
-                    "file": "chrome/content/down.html",
-                    "tier": 2,
-                    "message": "Some warning",
-                    "type": "warning",
-                    "compatibility_type": "warning",
-                    "id": [],
-                    "uid": "bb9948b604b111e09dfdc42c0301fe38"
-                },
-                {
-                    "context": ["<code>", None],
-                    "description": ["Something something, see "
-                                    "https://bugzilla.mozilla.org/"],
-                    "column": 0,
-                    "line": 1,
-                    "file": "chrome/content/down.html",
-                    "tier": 2,
-                    "message": "Some error",
-                    "type": "warning",
-                    "compatibility_type": "warning",
-                    "id": [],
-                    "uid": "bb9948b604b111e09dfdc42c0301fe38"
-                }
-            ] * 50,
+                            {
+                                "context": ["<code>", None],
+                                "description": ["Something something, see "
+                                                "https://bugzilla.mozilla.org/"],
+                                "column": 0,
+                                "line": 1,
+                                "file": "chrome/content/down.html",
+                                "tier": 2,
+                                "message": "Some warning",
+                                "type": "warning",
+                                "compatibility_type": "warning",
+                                "id": [],
+                                "uid": "bb9948b604b111e09dfdc42c0301fe38"
+                            },
+                            {
+                                "context": ["<code>", None],
+                                "description": ["Something something, see "
+                                                "https://bugzilla.mozilla.org/"],
+                                "column": 0,
+                                "line": 1,
+                                "file": "chrome/content/down.html",
+                                "tier": 2,
+                                "message": "Some error",
+                                "type": "warning",
+                                "compatibility_type": "warning",
+                                "id": [],
+                                "uid": "bb9948b604b111e09dfdc42c0301fe38"
+                            }
+                        ] * 50,
             "metadata": {}
         }
 
@@ -865,33 +880,33 @@ class TestFileUpload(UploadTest):
             "notices": 0,
             "message_tree": {},
             "messages": [
-                {
-                    "context": ["<code>", None],
-                    "description": ["Something something, see "
-                                    "https://bugzilla.mozilla.org/"],
-                    "column": 0,
-                    "line": 1,
-                    "file": "chrome/content/down.html",
-                    "tier": 2,
-                    "message": "Some warning",
-                    "type": "warning",
-                    "id": [],
-                    "uid": "bb9948b604b111e09dfdc42c0301fe38"
-                },
-                {
-                    "context": ["<code>", None],
-                    "description": ["Something something, see "
-                                    "https://bugzilla.mozilla.org/"],
-                    "column": 0,
-                    "line": 1,
-                    "file": "chrome/content/down.html",
-                    "tier": 2,
-                    "message": "Some error",
-                    "type": "error",
-                    "id": [],
-                    "uid": "bb9948b604b111e09dfdc42c0301fe38"
-                }
-            ] * 50,
+                            {
+                                "context": ["<code>", None],
+                                "description": ["Something something, see "
+                                                "https://bugzilla.mozilla.org/"],
+                                "column": 0,
+                                "line": 1,
+                                "file": "chrome/content/down.html",
+                                "tier": 2,
+                                "message": "Some warning",
+                                "type": "warning",
+                                "id": [],
+                                "uid": "bb9948b604b111e09dfdc42c0301fe38"
+                            },
+                            {
+                                "context": ["<code>", None],
+                                "description": ["Something something, see "
+                                                "https://bugzilla.mozilla.org/"],
+                                "column": 0,
+                                "line": 1,
+                                "file": "chrome/content/down.html",
+                                "tier": 2,
+                                "message": "Some error",
+                                "type": "error",
+                                "id": [],
+                                "uid": "bb9948b604b111e09dfdc42c0301fe38"
+                            }
+                        ] * 50,
             "metadata": {}
         }
         upload = FileUpload(validation=json.dumps(data))
@@ -920,7 +935,6 @@ def test_file_upload_passed_all_validations_invalid():
 
 
 class TestFileFromUpload(UploadTest):
-
     def setUp(self):
         super(TestFileFromUpload, self).setUp()
         for version in ('3.0', '3.6', '3.6.*', '4.0b6'):
@@ -1182,7 +1196,6 @@ class TestFileFromUpload(UploadTest):
 
 
 class TestZip(TestCase, amo.tests.AMOPaths):
-
     def test_zip(self):
         # This zip contains just one file chrome/ that we expect
         # to be unzipped as a directory, not a file.
@@ -1201,14 +1214,13 @@ class TestZip(TestCase, amo.tests.AMOPaths):
 
 
 class TestParseSearch(TestCase, amo.tests.AMOPaths):
-
     def parse(self, filename='search.xml'):
         return parse_addon(open(self.file_fixture_path(filename)))
 
     def extract(self):
         # This is the expected return value from extract_search.
         return {'url': {u'type': u'text/html', u'template':
-                        u'http://www.yyy.com?q={searchTerms}'},
+            u'http://www.yyy.com?q={searchTerms}'},
                 'xmlns': u'http://a9.com/-/spec/opensearch/1.1/',
                 'name': u'search tool',
                 'description': u'Search Engine for Firefox'}
@@ -1265,7 +1277,6 @@ class LanguagePackBase(UploadTest):
 
 
 class TestLanguagePack(LanguagePackBase):
-
     def file_create(self, path):
         return (File.objects.create(platform=self.platform,
                                     version=self.version,

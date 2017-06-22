@@ -34,7 +34,6 @@ from olympia.applications.models import AppVersion
 from olympia.files.utils import SafeUnzip, write_crx_as_xpi
 from olympia.translations.fields import TranslatedField
 
-
 log = olympia.core.logger.getLogger('z.files')
 
 # Acceptable extensions.
@@ -172,7 +171,7 @@ class File(OnChangeMixin, ModelBase):
         file_.is_webextension = parsed_data.get('is_webextension', False)
 
         if (is_beta and addon.status == amo.STATUS_PUBLIC and
-                version.channel == amo.RELEASE_CHANNEL_LISTED):
+                    version.channel == amo.RELEASE_CHANNEL_LISTED):
             file_.status = amo.STATUS_BETA
 
         file_.hash = file_.generate_hash(upload.path)
@@ -406,13 +405,13 @@ class File(OnChangeMixin, ModelBase):
             elif '//' in name:
                 # Filter out match urls so we can group them.
                 urls.append(name)
-            # Other strings are unknown permissions we don't care about
+                # Other strings are unknown permissions we don't care about
 
         if match_url is None and len(urls) == 1:
             match_url = Permission(
                 u'single-match',
                 ugettext(u'Access your data for {name}')
-                .format(name=urls[0]))
+                    .format(name=urls[0]))
         elif match_url is None and len(urls) > 1:
             details = (u'<details><summary>{copy}</summary><ul>{sites}</ul>'
                        u'</details>')
@@ -431,8 +430,14 @@ class File(OnChangeMixin, ModelBase):
             return []
         try:
             # Filter out any errant non-strings included in the manifest JSON.
-            return [p for p in self._webext_permissions.permissions
-                    if isinstance(p, basestring)]
+            # Remove any duplicate permissions
+            permissions = [p for p in self._webext_permissions.permissions
+                           if isinstance(p, basestring)]
+            filtered_permissions = set()
+            filtered_permissions_add = filtered_permissions.add
+            return [p for p in permissions if
+                    not (p in filtered_permissions or filtered_permissions_add(p))]
+
         except WebextPermission.DoesNotExist:
             return []
 
